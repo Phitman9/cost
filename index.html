@@ -531,40 +531,9 @@
             saveToLocalStorage();
         }
 
-               async function saveToday()
- {
-            const m1Total = parseFloat(document.getElementById('m1-total').textContent) || 0;
-            const m1CostPerKg = parseFloat(document.getElementById('m1-cost-per-kg').textContent) || 0;
-            const m2Total = parseFloat(document.getElementById('m2-total').textContent) || 0;
-            const m2CostPerKg = parseFloat(document.getElementById('m2-cost-per-kg').textContent) || 0;
-            const finalCost = parseFloat(document.getElementById('final-cost').textContent) || 0;
+             
+        async function saveToday()
 
-            const now = new Date();
-            const date = now.toLocaleDateString('en-IN');  // 🔥 Daily log
-            const time = now.toLocaleTimeString('en-IN');  // 🔥 Timestamp
-
-            const entry = { date, time, m1Total, m1CostPerKg, m2Total, m2CostPerKg, finalCost };
-
-            dailyLog.push(entry);
-            saveToLocalStorage();
-            showToast(`✅ Local save: ${date} ${time}`);
-
-            // 🔥 Auto-save to Google Sheet if picked
-            const sheetUrl = document.getElementById('selectedSheet').value;
-            if (sheetUrl) {
-                try {
-                    await fetch('/api/save-cost', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ ...entry, sheetUrl })
-                    });
-                    showToast(`✅ Synced to Google Sheet!`);
-                } catch(e) {
-                    console.log('Sheet save needs Vercel API');
-                }
-            }
-        }
-           }
 
         function exportToExcel() {
             if (!dailyLog.length) {
