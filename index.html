@@ -4,21 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#38bdf8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Cost Calculator">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23208091' width='192' height='192'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>₹</text></svg>">
-    <link rel="manifest" href="data:application/json,{%22name%22:%22Cost%20Price%20Calculator%20-%20Material%20Blending%22,%22short_name%22:%22Cost%20Calculator%22,%22description%22:%22Calculate%20blended%20material%20costs%20for%20Machine%201%20%26%20Machine%202%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2338bdf8%22,%22orientation%22:%22portrait-primary%22,%22scope%22:%22./%22,%22icons%22:[{%22src%22:%22data:image/svg%2bxml,%253Csvg%2520xmlns%3D%2527http://www.w3.org/2000/svg%2527%2520viewBox%3D%25270%250A0%25201024%25201024%2527%253E%253Crect%2520fill%3D%2527%252338bdf8%2527%2520width%3D%25271024%2527%2520height%3D%25271024%2527/%253E%253Ctext%2520x%3D%252750%25%2525%2527%2520y%3D%252750%25%2525%2527%2520font-size%3D%2527400%2527%2520fill%3D%2527white%2527%2520text-anchor%3D%2527middle%2527%2520dominant-baseline%3D%2527central%2527%2520font-weight%3D%2527bold%2527%253E%25E2%2582%25B9%253C/text%253E%253C/svg%253E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg%2bxml%22,%22purpose%22:%22any%20maskable%22}]}">
-      <title>Cost Price Calculator - Material Blending</title>
-    
-    <!-- 🔥 NEW: Google Sheet Picker -->
-    <script async src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
-    <script>
-      window.onApiLoad = function() { gapi.load('auth2:picker', () => { window.gapiReady = true; }); };
-    </script>
+    <title>Cost Price Calculator - Material Blending</title>
     
     <style>
-
         :root {
             --color-bg-primary: #0f172a;
             --color-bg-surface: #1e293b;
@@ -31,11 +19,7 @@
             --color-border: #334155;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -45,30 +29,15 @@
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            color: var(--color-primary);
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: var(--color-text-secondary);
-            font-size: 1rem;
-        }
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 2.5rem; color: var(--color-primary); margin-bottom: 10px; }
+        .header p { color: var(--color-text-secondary); }
 
         .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
             margin-bottom: 30px;
         }
@@ -81,35 +50,19 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        .machine-title {
-            font-size: 1.5rem;
-            color: var(--color-primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .machine-title { font-size: 1.5rem; color: var(--color-primary); margin-bottom: 20px; }
 
         .material-row {
             display: grid;
-            grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr;
+            grid-template-columns: 1.5fr 0.8fr 0.8fr 0.5fr;
             gap: 12px;
             margin-bottom: 15px;
             align-items: end;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 6px; }
+        
         .form-group input {
             background: #0f172a;
             border: 1px solid var(--color-border);
@@ -117,13 +70,7 @@
             color: var(--color-text-primary);
             padding: 10px 12px;
             font-size: 0.95rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+            width: 100%;
         }
 
         .add-row-btn {
@@ -133,13 +80,8 @@
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s;
+            width: 100%;
             margin-top: 10px;
-        }
-
-        .add-row-btn:hover {
-            background: rgba(56, 189, 248, 0.1);
         }
 
         .summary-section {
@@ -148,12 +90,11 @@
             border-radius: 12px;
             padding: 25px;
             grid-column: 1 / -1;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
 
@@ -165,23 +106,8 @@
             text-align: center;
         }
 
-        .summary-card-title {
-            font-size: 0.9rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .summary-card-value {
-            font-size: 2rem;
-            color: var(--color-primary);
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .summary-card-unit {
-            font-size: 0.85rem;
-            color: var(--color-text-secondary);
-        }
+        .summary-card-value { font-size: 1.8rem; color: var(--color-primary); font-weight: 700; }
+        .summary-card-unit { font-size: 0.85rem; color: var(--color-text-secondary); }
 
         .ratio-section {
             background: #0f172a;
@@ -191,42 +117,7 @@
             margin-top: 20px;
         }
 
-        .ratio-title {
-            font-size: 1rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 15px;
-        }
-
-        .ratio-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .ratio-input {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .ratio-input label {
-            font-size: 0.85rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 6px;
-        }
-
-        .ratio-input input {
-            background: #1e293b;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            color: var(--color-text-primary);
-            padding: 10px 12px;
-            font-size: 0.95rem;
-        }
-
-        .ratio-input input:focus {
-            outline: none;
-            border-color: var(--color-primary);
-        }
+        .ratio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
         .final-cost {
             background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(16, 185, 129, 0.2));
@@ -237,35 +128,10 @@
             margin-top: 20px;
         }
 
-        .final-cost-label {
-            font-size: 1rem;
-            color: var(--color-text-secondary);
-            margin-bottom: 10px;
-        }
+        .final-cost-value { font-size: 2.5rem; color: var(--color-success); font-weight: 700; }
 
-        .final-cost-value {
-            font-size: 2.5rem;
-            color: var(--color-success);
-            font-weight: 700;
-        }
-
-        .reset-btn {
-            background: var(--color-warning);
-            color: #000;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: background 0.2s;
-            margin-top: 20px;
-        }
-
-        .reset-btn:hover {
-            background: #d97706;
-        }
-
+        .btn-group { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        
         .action-btn {
             background: var(--color-primary);
             color: #fff;
@@ -273,420 +139,251 @@
             padding: 12px 24px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 1rem;
             font-weight: 600;
-            transition: background 0.2s;
-            margin-top: 20px;
-            margin-right: 10px;
         }
 
-        .action-btn:hover {
-            background: var(--color-primary-hover);
-        }
+        .reset-btn { background: var(--color-warning); color: #000; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        .delete-btn { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 8px; border-radius: 4px; cursor: pointer; }
 
         .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--color-success);
-            color: #fff;
-            padding: 16px 24px;
-            border-radius: 6px;
-            z-index: 9999;
+            position: fixed; bottom: 20px; right: 20px;
+            background: var(--color-success); color: #fff;
+            padding: 16px 24px; border-radius: 6px;
             animation: slideIn 0.3s ease-out;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .delete-btn {
-            background: transparent;
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-            }
-
-            .material-row {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚙️ Cost Price Calculator</h1>
-            <p>Material Blending for Machine 1 & Machine 2</p>
-        </div>
 
-        <div class="main-grid">
-            <!-- MACHINE 1 -->
-            <div class="machine-section">
-                <h2 class="machine-title">🔧 Machine 1</h2>
-                <div id="machine1-rows"></div>
-                <button class="add-row-btn" onclick="addRow('machine1')">+ Add Material</button>
-            </div>
-
-            <!-- MACHINE 2 -->
-            <div class="machine-section">
-                <h2 class="machine-title">🔧 Machine 2</h2>
-                <div id="machine2-rows"></div>
-                <button class="add-row-btn" onclick="addRow('machine2')">+ Add Material</button>
-            </div>
-
-            <!-- SUMMARY & BLENDING -->
-            <div class="summary-section">
-                <h2 class="machine-title" style="margin-bottom: 20px;">📊 Summary & Blending Ratio</h2>
-
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="summary-card-title">Machine 1 Total Cost</div>
-                        <div class="summary-card-value">₹<span id="m1-total">0.00</span></div>
-                        <div class="summary-card-unit">Total material cost</div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-title">Machine 1 Cost per kg</div>
-                        <div class="summary-card-value">₹<span id="m1-cost-per-kg">0.00</span></div>
-                        <div class="summary-card-unit">per kilogram</div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-title">Machine 2 Total Cost</div>
-                        <div class="summary-card-value">₹<span id="m2-total">0.00</span></div>
-                        <div class="summary-card-unit">Total material cost</div>
-                    </div>
-
-                    <div class="summary-card">
-                        <div class="summary-card-title">Machine 2 Cost per kg</div>
-                        <div class="summary-card-value">₹<span id="m2-cost-per-kg">0.00</span></div>
-                        <div class="summary-card-unit">per kilogram</div>
-                    </div>
-                </div>
-
-                <div class="ratio-section">
-                    <div class="ratio-title">🎯 Blending Ratio Configuration</div>
-                    <div class="ratio-grid">
-                        <div class="ratio-input">
-                            <label for="ratio1">Machine 1 Ratio (parts)</label>
-                            <input type="number" id="ratio1" value="5.5" min="0" step="0.1" oninput="calculateBlend()">
-                        </div>
-                        <div class="ratio-input">
-                            <label for="ratio2">Machine 2 Ratio (parts)</label>
-                            <input type="number" id="ratio2" value="1" min="0" step="0.1" oninput="calculateBlend()">
-                        </div>
-                    </div>
-                    <div style="text-align: center; margin-top: 15px; color: var(--color-text-secondary); font-size: 0.9rem;">
-                        Total Ratio: <span id="total-ratio" style="color: var(--color-primary); font-weight: 700;">6.5</span> parts
-                    </div>
-                </div>
-
-                <div class="final-cost">
-                    <div class="final-cost-label">Final Blended Cost per kg</div>
-                    <div class="final-cost-value">₹<span id="final-cost">0.00</span></div>
-                </div>
-
-                <button class="reset-btn" onclick="resetAll()">🔄 Reset All</button>
-                <button class="action-btn" onclick="copyToClipboard()">📋 Copy Cost</button>
-                <button class="action-btn" onclick="downloadPDF()">📥 Download PDF</button>
-                <button class="action-btn" onclick="saveToday()">💾 Save Today</button>
-                               <button class="action-btn" onclick="exportToExcel()">📊 Export to Excel</button>
-                
-                <!-- 🔥 NEW: Sheet Picker -->
-                <button class="action-btn" onclick="pickSheet()" style="background: #4285f4;">📊 Choose Log Sheet</button>
-                <input id="selectedSheet" style="margin: 10px 0; padding: 12px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; width: 100%; max-width: 400px;" placeholder="Click above to pick your daily log sheet" readonly />
-                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Pick → Save Today auto-logs with timestamp!</p>
-            </div>
-
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>⚙️ Cost Price Calculator</h1>
+        <p>Material Blending for Machine 1 & Machine 2</p>
     </div>
 
-    <!-- Excel library + HTML2PDF -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <div class="main-grid">
+        <div class="machine-section">
+            <h2 class="machine-title">🔧 Machine 1</h2>
+            <div id="machine1-rows"></div>
+            <button class="add-row-btn" onclick="addRow('machine1')">+ Add Material</button>
+        </div>
 
-    <script>
-        // Default template - 3 empty materials per machine
-        const defaultMachine1 = [
-            { name: '', qty: 0, price: 0 },
-            { name: '', qty: 0, price: 0 },
-            { name: '', qty: 0, price: 0 }
-        ];
+        <div class="machine-section">
+            <h2 class="machine-title">🔧 Machine 2</h2>
+            <div id="machine2-rows"></div>
+            <button class="add-row-btn" onclick="addRow('machine2')">+ Add Material</button>
+        </div>
 
-        const defaultMachine2 = [
-            { name: '', qty: 0, price: 0 },
-            { name: '', qty: 0, price: 0 },
-            { name: '', qty: 0, price: 0 }
-        ];
-
-        // Data storage
-        let machine1 = JSON.parse(JSON.stringify(defaultMachine1));
-        let machine2 = JSON.parse(JSON.stringify(defaultMachine2));
-        // Daily log storage (multiple entries with time)
-        let dailyLog = [];
-
-        function renderRows(machineId) {
-            const container = document.getElementById(`${machineId}-rows`);
-            const data = machineId === 'machine1' ? machine1 : machine2;
+        <div class="summary-section">
+            <h2 class="machine-title">📊 Summary & Blending</h2>
             
-            container.innerHTML = data.map((item, idx) => `
-                <div class="material-row">
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-card-title">Machine 1 Cost</div>
+                    <div class="summary-card-value">₹<span id="m1-cost-per-kg">0.00</span></div>
+                    <div class="summary-card-unit">per kg</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-card-title">Machine 2 Cost</div>
+                    <div class="summary-card-value">₹<span id="m2-cost-per-kg">0.00</span></div>
+                    <div class="summary-card-unit">per kg</div>
+                </div>
+            </div>
+
+            <div class="ratio-section">
+                <div style="margin-bottom:10px; color:var(--color-text-secondary)">Blending Ratio (Parts)</div>
+                <div class="ratio-grid">
                     <div class="form-group">
-                        <label>Material Name</label>
-                        <input type="text" value="${item.name}" onchange="updateField('${machineId}', ${idx}, 'name', this.value)">
+                        <label>Machine 1</label>
+                        <input type="number" id="ratio1" value="5.5" step="0.1" oninput="calculateBlend()">
                     </div>
                     <div class="form-group">
-                        <label>Qty (kg)</label>
-                        <input type="number" value="${item.qty}" step="0.01" oninput="updateField('${machineId}', ${idx}, 'qty', parseFloat(this.value))">
-                    </div>
-                    <div class="form-group">
-                        <label>₹/kg</label>
-                        <input type="number" value="${item.price}" step="0.01" oninput="updateField('${machineId}', ${idx}, 'price', parseFloat(this.value))">
-                    </div>
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button class="delete-btn" onclick="deleteRow('${machineId}', ${idx})">Delete</button>
+                        <label>Machine 2</label>
+                        <input type="number" id="ratio2" value="1" step="0.1" oninput="calculateBlend()">
                     </div>
                 </div>
-            `).join('');
-        }
+            </div>
 
-        function updateField(machineId, idx, field, value) {
-            const data = machineId === 'machine1' ? machine1 : machine2;
-            data[idx][field] = value;
-            calculateBlend();
-        }
+            <div class="final-cost">
+                <div style="margin-bottom:10px; color:var(--color-text-secondary)">Final Blended Cost</div>
+                <div class="final-cost-value">₹<span id="final-cost">0.00</span></div>
+                <div style="color:var(--color-success)">per kg</div>
+            </div>
 
-        function deleteRow(machineId, idx) {
-            const data = machineId === 'machine1' ? machine1 : machine2;
-            data.splice(idx, 1);
-            renderRows(machineId);
-            calculateBlend();
-        }
+            <div class="btn-group">
+                <button class="action-btn" onclick="saveToday()">💾 Save Entry</button>
+                <button class="action-btn" onclick="exportToExcel()">📊 Export Log</button>
+                <button class="action-btn" onclick="downloadPDF()">📥 PDF</button>
+                <button class="reset-btn" onclick="resetAll()">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function addRow(machineId) {
-            const data = machineId === 'machine1' ? machine1 : machine2;
-            data.push({ name: `Material ${data.length + 1}`, qty: 0, price: 0 });
-            renderRows(machineId);
-        }
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        function calculateBlend() {
-            // Machine 1 calculations
-            const m1Total = machine1.reduce((sum, item) => sum + (item.qty * item.price), 0);
-            const m1Qty = machine1.reduce((sum, item) => sum + item.qty, 0);
-            const m1CostPerKg = m1Qty > 0 ? m1Total / m1Qty : 0;
+<script>
+    // Initial State
+    const defaultMachine1 = [
+        { name: 'Filler 1', qty: 16, price: 25.25 },
+        { name: 'Filler 2', qty: 16, price: 24 },
+        { name: 'Agro', qty: 16, price: 66 },
+        { name: 'Mix b-14', qty: 8, price: 64 }
+    ];
+    const defaultMachine2 = [
+        { name: 'Titan', qty: 4, price: 89 },
+        { name: 'Endothene', qty: 4, price: 75 },
+        { name: 'Panni', qty: 2, price: 75 },
+        { name: 'Master batch', qty: 2.5, price: 155 }
+    ];
 
-            // Machine 2 calculations
-            const m2Total = machine2.reduce((sum, item) => sum + (item.qty * item.price), 0);
-            const m2Qty = machine2.reduce((sum, item) => sum + item.qty, 0);
-            const m2CostPerKg = m2Qty > 0 ? m2Total / m2Qty : 0;
+    let machine1 = JSON.parse(JSON.stringify(defaultMachine1));
+    let machine2 = JSON.parse(JSON.stringify(defaultMachine2));
+    let dailyLog = [];
 
-            // Blending ratio
-            const ratio1 = parseFloat(document.getElementById('ratio1').value) || 0;
-            const ratio2 = parseFloat(document.getElementById('ratio2').value) || 0;
-            const totalRatio = ratio1 + ratio2;
+    // --- Core Functions ---
 
-            // Final blended cost
-            const finalCost = totalRatio > 0 
-                ? (m1CostPerKg * ratio1 + m2CostPerKg * ratio2) / totalRatio 
-                : 0;
+    function renderRows(machineId) {
+        const container = document.getElementById(`${machineId}-rows`);
+        const data = machineId === 'machine1' ? machine1 : machine2;
+        
+        container.innerHTML = data.map((item, idx) => `
+            <div class="material-row">
+                <div class="form-group">
+                    <label>Material</label>
+                    <input type="text" value="${item.name}" onchange="updateField('${machineId}', ${idx}, 'name', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Kg</label>
+                    <input type="number" value="${item.qty}" step="0.01" oninput="updateField('${machineId}', ${idx}, 'qty', parseFloat(this.value))">
+                </div>
+                <div class="form-group">
+                    <label>₹/kg</label>
+                    <input type="number" value="${item.price}" step="0.01" oninput="updateField('${machineId}', ${idx}, 'price', parseFloat(this.value))">
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="delete-btn" onclick="deleteRow('${machineId}', ${idx})">×</button>
+                </div>
+            </div>
+        `).join('');
+    }
 
-            // Update UI
-            document.getElementById('m1-total').textContent = m1Total.toFixed(2);
-            document.getElementById('m1-cost-per-kg').textContent = m1CostPerKg.toFixed(2);
-            document.getElementById('m2-total').textContent = m2Total.toFixed(2);
-            document.getElementById('m2-cost-per-kg').textContent = m2CostPerKg.toFixed(2);
-            document.getElementById('total-ratio').textContent = totalRatio.toFixed(2);
-            document.getElementById('final-cost').textContent = finalCost.toFixed(2);
-            saveToLocalStorage();
-        }
-
-             
-        async function saveToday()
-
-
-        function exportToExcel() {
-            if (!dailyLog.length) {
-                showToast('No entries to export yet');
-                return;
-            }
-
-            const worksheetData = [
-                ['Date', 'Time', 'M1 Total Cost', 'M1 Cost/kg', 'M2 Total Cost', 'M2 Cost/kg', 'Final Blended Cost'],
-                ...dailyLog.map(row => [
-                    row.date,
-                    row.time,
-                    row.m1Total,
-                    row.m1CostPerKg,
-                    row.m2Total,
-                    row.m2CostPerKg,
-                    row.finalCost
-                ])
-            ];
-
-            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'Daily Log');
-
-            const now = new Date();
-            const date = now.toISOString().split('T')[0];
-
-            XLSX.writeFile(workbook, `Cost_Calculator_Daily_Log_${date}.xlsx`);
-        }
-
-        function resetAll() {
-            machine1 = JSON.parse(JSON.stringify(defaultMachine1));
-            machine2 = JSON.parse(JSON.stringify(defaultMachine2));
-            document.getElementById('ratio1').value = 5.5;
-            document.getElementById('ratio2').value = 1;
-            renderRows('machine1');
-            renderRows('machine2');
-            calculateBlend();
-            showToast('✅ Reset to 3 empty materials per machine');
-        }
-
-        function saveToLocalStorage() {
-            try {
-                if (typeof localStorage !== 'undefined') {
-                    localStorage.setItem('costCalculatorData', JSON.stringify({
-                        machine1: machine1,
-                        machine2: machine2,
-                        ratio1: document.getElementById('ratio1').value,
-                        ratio2: document.getElementById('ratio2').value,
-                        dailyLog: dailyLog
-                    }));
-                }
-            } catch (e) {
-                console.log('localStorage not available');
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                if (typeof localStorage !== 'undefined') {
-                    const saved = localStorage.getItem('costCalculatorData');
-                    if (saved) {
-                        try {
-                            const data = JSON.parse(saved);
-                            machine1 = data.machine1 || machine1;
-                            machine2 = data.machine2 || machine2;
-                            document.getElementById('ratio1').value = data.ratio1 || 5.5;
-                            document.getElementById('ratio2').value = data.ratio2 || 1;
-                            dailyLog = data.dailyLog || [];
-                        } catch (e) {
-                            console.log('Could not load saved data');
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log('localStorage not available');
-            }
-        }
-
-        function copyToClipboard() {
-            const finalCost = document.getElementById('final-cost').textContent;
-            const textToCopy = `₹${finalCost}`;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                showToast(`Copied: ${textToCopy}`);
-            });
-        }
-
-        function downloadPDF() {
-            const element = document.querySelector('.container');
-            const date = new Date().toISOString().split('T')[0];
-            const opt = {
-                margin: 10,
-                filename: `Cost_Price_Calculation_${date}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // Install prompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            let deferredPrompt = e;
-            const installButton = document.createElement('button');
-            installButton.textContent = '⬇️ Install App';
-            installButton.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #38bdf8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; z-index: 10000; font-weight: 600;';
-            document.body.appendChild(installButton);
-            
-            installButton.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        showToast('✅ App installed! Find it on your home screen');
-                    }
-                    deferredPrompt = null;
-                    installButton.style.display = 'none';
-                }
-            });
-        });
-
-        window.addEventListener('appinstalled', () => {
-            showToast('🎉 App installed successfully!');
-        });
-
-        // Initialize
-        loadFromLocalStorage();
-        renderRows('machine1');
-        renderRows('machine2');
+    function updateField(machineId, idx, field, value) {
+        const data = machineId === 'machine1' ? machine1 : machine2;
+        data[idx][field] = value;
         calculateBlend();
-            // 🔥 NEW: Google Sheet Picker
-        async function pickSheet() {
-            if (!window.gapiReady) return showToast('Google loading... try again');
-            
-            try {
-                await gapi.auth2.init({ client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com' }); // Replace
-                const picker = new google.picker.PickerBuilder()
-                    .addView(google.picker.ViewId.SPREADSHEETS)
-                    .setDeveloperKey('YOUR_API_KEY') // Replace from Google Console
-                    .setCallback(data => {
-                        if (data.action === google.picker.Action.PICKED) {
-                            document.getElementById('selectedSheet
+    }
+
+    function addRow(machineId) {
+        const data = machineId === 'machine1' ? machine1 : machine2;
+        data.push({ name: '', qty: 0, price: 0 });
+        renderRows(machineId);
+    }
+
+    function deleteRow(machineId, idx) {
+        const data = machineId === 'machine1' ? machine1 : machine2;
+        data.splice(idx, 1);
+        renderRows(machineId);
+        calculateBlend();
+    }
+
+    function calculateBlend() {
+        // Helper for single machine
+        const getStats = (data) => {
+            const totalCost = data.reduce((sum, item) => sum + (item.qty * item.price), 0);
+            const totalQty = data.reduce((sum, item) => sum + item.qty, 0);
+            return { cost: totalCost, qty: totalQty, avg: totalQty ? totalCost/totalQty : 0 };
+        };
+
+        const m1 = getStats(machine1);
+        const m2 = getStats(machine2);
+
+        const r1 = parseFloat(document.getElementById('ratio1').value) || 0;
+        const r2 = parseFloat(document.getElementById('ratio2').value) || 0;
+        const totalR = r1 + r2;
+
+        const final = totalR ? ((m1.avg * r1) + (m2.avg * r2)) / totalR : 0;
+
+        // Update DOM
+        document.getElementById('m1-cost-per-kg').innerText = m1.avg.toFixed(2);
+        document.getElementById('m2-cost-per-kg').innerText = m2.avg.toFixed(2);
+        document.getElementById('final-cost').innerText = final.toFixed(2);
+        
+        saveToLocalStorage();
+    }
+
+    // --- Saving & Exporting ---
+
+    function saveToday() {
+        const entry = {
+            date: new Date().toLocaleString(),
+            m1_cost: document.getElementById('m1-cost-per-kg').innerText,
+            m2_cost: document.getElementById('m2-cost-per-kg').innerText,
+            final_cost: document.getElementById('final-cost').innerText
+        };
+        dailyLog.push(entry);
+        saveToLocalStorage();
+        showToast("✅ Saved to Session Log");
+    }
+
+    function exportToExcel() {
+        if(dailyLog.length === 0) return showToast("⚠️ No saved entries to export!");
+        
+        const ws = XLSX.utils.json_to_sheet(dailyLog);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Cost Log");
+        XLSX.writeFile(wb, "Cost_Price_Log.xlsx");
+    }
+
+    function downloadPDF() {
+        const element = document.body;
+        html2pdf().set({ margin: 10, filename: 'cost-calc.pdf' }).from(element).save();
+    }
+
+    function resetAll() {
+        if(confirm("Reset all values?")) {
+            localStorage.removeItem('costData');
+            location.reload();
+        }
+    }
+
+    // --- Utilities ---
+
+    function saveToLocalStorage() {
+        const data = { machine1, machine2, dailyLog };
+        localStorage.setItem('costData', JSON.stringify(data));
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('costData');
+        if(saved) {
+            const parsed = JSON.parse(saved);
+            machine1 = parsed.machine1 || machine1;
+            machine2 = parsed.machine2 || machine2;
+            dailyLog = parsed.dailyLog || [];
+        }
+    }
+
+    function showToast(msg) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
+    }
+
+    // Init
+    loadFromLocalStorage();
+    renderRows('machine1');
+    renderRows('machine2');
+    calculateBlend();
+
 </script>
 </body>
 </html>
