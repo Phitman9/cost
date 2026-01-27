@@ -120,24 +120,34 @@
         .toolbar {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
-            margin-top: 30px;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid var(--border);
         }
 
         .btn-tool {
-            padding: 10px 18px;
+            padding: 12px 24px;
             border-radius: 8px;
             border: none;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 1rem;
+            transition: transform 0.1s;
         }
 
+        .btn-tool:active { transform: scale(0.95); }
+
         .btn-primary { background: var(--primary); color: #000; }
-        .btn-success { background: var(--success); color: #fff; }
+        .btn-success { 
+            background: var(--success); 
+            color: #fff; 
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
         .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
     </style>
 </head>
@@ -181,11 +191,11 @@
             <div style="display: flex; gap: 20px;">
                 <div style="flex: 1">
                     <label style="font-size: 0.8rem;">Machine 1 Parts</label>
-                    <input type="number" step="0.1" id="r1" value="5.5" oninput="calculate()">
+                    <input type="number" step="0.1" id="r1" value="0.0" oninput="calculate()">
                 </div>
                 <div style="flex: 1">
                     <label style="font-size: 0.8rem;">Machine 2 Parts</label>
-                    <input type="number" step="0.1" id="r2" value="1" oninput="calculate()">
+                    <input type="number" step="0.1" id="r2" value="0.0" oninput="calculate()">
                 </div>
             </div>
         </div>
@@ -197,24 +207,17 @@
     </div>
 
     <div class="toolbar">
-        <button class="btn-tool btn-ghost" onclick="resetAll()">🔄 Reset</button>
-        <button class="btn-tool btn-success" onclick="saveToGoogleForm()">💾 Save Today</button>
+        <button class="btn-tool btn-ghost" onclick="resetAll()">🔄 Reset All</button>
+        <button class="btn-tool btn-success" onclick="saveToGoogleForm()">💾 SAVE TODAY</button>
         <button class="btn-tool btn-primary" onclick="window.print()">📥 Download PDF</button>
     </div>
 </div>
 
 <script>
+    // STARTING WITH ZEROS
     const defaultData = {
-        m1: [
-            { name: 'Filler 1', qty: 16, price: 25.25 },
-            { name: 'Filler 2', qty: 16, price: 24.00 },
-            { name: 'Agro', qty: 16, price: 66.00 },
-            { name: 'Mix b-14', qty: 8, price: 64.00 }
-        ],
-        m2: [
-            { name: 'Titan', qty: 4, price: 89.00 },
-            { name: 'Endothene', qty: 4, price: 75.00 }
-        ]
+        m1: [{ name: '', qty: 0, price: 0 }],
+        m2: [{ name: '', qty: 0, price: 0 }]
     };
 
     let state = JSON.parse(localStorage.getItem('savedState')) || JSON.parse(JSON.stringify(defaultData));
@@ -227,9 +230,9 @@
                 const row = document.createElement('div');
                 row.className = 'row';
                 row.innerHTML = `
-                    <input type="text" value="${item.name}" oninput="updateItem('${key}', ${index}, 'name', this.value)">
-                    <input type="number" value="${item.qty}" oninput="updateItem('${key}', ${index}, 'qty', this.value)">
-                    <input type="number" value="${item.price}" oninput="updateItem('${key}', ${index}, 'price', this.value)">
+                    <input type="text" placeholder="Material" value="${item.name}" oninput="updateItem('${key}', ${index}, 'name', this.value)">
+                    <input type="number" placeholder="kg" value="${item.qty === 0 ? '' : item.qty}" oninput="updateItem('${key}', ${index}, 'qty', this.value)">
+                    <input type="number" placeholder="Rate" value="${item.price === 0 ? '' : item.price}" oninput="updateItem('${key}', ${index}, 'price', this.value)">
                     <button class="btn-del" onclick="removeItem('${key}', ${index})">×</button>
                 `;
                 container.appendChild(row);
@@ -250,7 +253,11 @@
     }
 
     function removeItem(mKey, index) {
-        state[mKey].splice(index, 1);
+        if(state[mKey].length > 1) {
+            state[mKey].splice(index, 1);
+        } else {
+            state[mKey] = [{ name: '', qty: 0, price: 0 }];
+        }
         render();
     }
 
@@ -260,20 +267,22 @@
             list.forEach(i => { totalW += i.qty; totalC += (i.qty * i.price); });
             return totalW ? totalC / totalW : 0;
         };
+
         const avg1 = getAvg(state.m1);
         const avg2 = getAvg(state.m2);
+        
         document.getElementById('m1-avg').innerText = `₹${avg1.toFixed(2)}`;
         document.getElementById('m2-avg').innerText = `₹${avg2.toFixed(2)}`;
+
         const r1 = parseFloat(document.getElementById('r1').value) || 0;
         const r2 = parseFloat(document.getElementById('r2').value) || 0;
+        
         const final = (r1 + r2) > 0 ? ((avg1 * r1) + (avg2 * r2)) / (r1 + r2) : 0;
         document.getElementById('final-price').innerText = `₹${final.toFixed(2)}`;
     }
 
     function saveToGoogleForm() {
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSevZiMDB-TZ12VprOh0QP-nRsbIhqdiKdIeS6x94-2QqBZKMw/formResponse";
-        
-        // These are your specific entry IDs from the link you provided
         const entry_m1 = "entry.1043991863"; 
         const entry_m2 = "entry.1763710978"; 
         const entry_final = "entry.482957280"; 
@@ -292,21 +301,24 @@
             mode: 'no-cors',
             body: formData
         }).then(() => {
-            alert("✅ Data sent to your Google Sheet!");
+            alert("✅ SUCCESSFULLY LOGGED!\nData has been sent to your Google Sheet.");
         }).catch(() => {
-            alert("❌ Error connecting to the form.");
+            alert("❌ Connection Error.");
         });
     }
 
     function resetAll() {
-        if(confirm('Reset all?')) {
+        if(confirm('Clear all data and start over?')) {
             localStorage.removeItem('savedState');
             state = JSON.parse(JSON.stringify(defaultData));
+            document.getElementById('r1').value = 0;
+            document.getElementById('r2').value = 0;
             render();
         }
     }
 
     render();
 </script>
+
 </body>
 </html>
