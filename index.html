@@ -531,7 +531,8 @@
             saveToLocalStorage();
         }
 
-                async function saveToday() {
+               async function saveToday()
+ {
             const m1Total = parseFloat(document.getElementById('m1-total').textContent) || 0;
             const m1CostPerKg = parseFloat(document.getElementById('m1-cost-per-kg').textContent) || 0;
             const m2Total = parseFloat(document.getElementById('m2-total').textContent) || 0;
@@ -563,7 +564,7 @@
                 }
             }
         }
-
+           }
 
         function exportToExcel() {
             if (!dailyLog.length) {
