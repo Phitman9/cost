@@ -9,8 +9,16 @@
     <meta name="apple-mobile-web-app-title" content="Cost Calculator">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23208091' width='192' height='192'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='central' font-weight='bold'>₹</text></svg>">
     <link rel="manifest" href="data:application/json,{%22name%22:%22Cost%20Price%20Calculator%20-%20Material%20Blending%22,%22short_name%22:%22Cost%20Calculator%22,%22description%22:%22Calculate%20blended%20material%20costs%20for%20Machine%201%20%26%20Machine%202%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f172a%22,%22theme_color%22:%22%2338bdf8%22,%22orientation%22:%22portrait-primary%22,%22scope%22:%22./%22,%22icons%22:[{%22src%22:%22data:image/svg%2bxml,%253Csvg%2520xmlns%3D%2527http://www.w3.org/2000/svg%2527%2520viewBox%3D%25270%250A0%25201024%25201024%2527%253E%253Crect%2520fill%3D%2527%252338bdf8%2527%2520width%3D%25271024%2527%2520height%3D%25271024%2527/%253E%253Ctext%2520x%3D%252750%25%2525%2527%2520y%3D%252750%25%2525%2527%2520font-size%3D%2527400%2527%2520fill%3D%2527white%2527%2520text-anchor%3D%2527middle%2527%2520dominant-baseline%3D%2527central%2527%2520font-weight%3D%2527bold%2527%253E%25E2%2582%25B9%253C/text%253E%253C/svg%253E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg%2bxml%22,%22purpose%22:%22any%20maskable%22}]}">
-    <title>Cost Price Calculator - Material Blending</title>
+      <title>Cost Price Calculator - Material Blending</title>
+    
+    <!-- 🔥 NEW: Google Sheet Picker -->
+    <script async src="https://apis.google.com/js/api.js?onload=onApiLoad"></script>
+    <script>
+      window.onApiLoad = function() { gapi.load('auth2:picker', () => { window.gapiReady = true; }); };
+    </script>
+    
     <style>
+
         :root {
             --color-bg-primary: #0f172a;
             --color-bg-surface: #1e293b;
@@ -412,8 +420,14 @@
                 <button class="action-btn" onclick="copyToClipboard()">📋 Copy Cost</button>
                 <button class="action-btn" onclick="downloadPDF()">📥 Download PDF</button>
                 <button class="action-btn" onclick="saveToday()">💾 Save Today</button>
-                <button class="action-btn" onclick="exportToExcel()">📊 Export to Excel</button>
+                               <button class="action-btn" onclick="exportToExcel()">📊 Export to Excel</button>
+                
+                <!-- 🔥 NEW: Sheet Picker -->
+                <button class="action-btn" onclick="pickSheet()" style="background: #4285f4;">📊 Choose Log Sheet</button>
+                <input id="selectedSheet" style="margin: 10px 0; padding: 12px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; width: 100%; max-width: 400px;" placeholder="Click above to pick your daily log sheet" readonly />
+                <p style="font-size: 0.85rem; color: var(--color-text-secondary);">Pick → Save Today auto-logs with timestamp!</p>
             </div>
+
         </div>
     </div>
 
@@ -517,8 +531,7 @@
             saveToLocalStorage();
         }
 
-        function saveToday() {
-            // Use the latest calculated values from the UI
+                async function saveToday() {
             const m1Total = parseFloat(document.getElementById('m1-total').textContent) || 0;
             const m1CostPerKg = parseFloat(document.getElementById('m1-cost-per-kg').textContent) || 0;
             const m2Total = parseFloat(document.getElementById('m2-total').textContent) || 0;
@@ -526,24 +539,31 @@
             const finalCost = parseFloat(document.getElementById('final-cost').textContent) || 0;
 
             const now = new Date();
-            const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
-            const time = now.toLocaleTimeString();        // Local time
+            const date = now.toLocaleDateString('en-IN');  // 🔥 Daily log
+            const time = now.toLocaleTimeString('en-IN');  // 🔥 Timestamp
 
-            const entry = {
-                date,
-                time,
-                m1Total,
-                m1CostPerKg,
-                m2Total,
-                m2CostPerKg,
-                finalCost
-            };
+            const entry = { date, time, m1Total, m1CostPerKg, m2Total, m2CostPerKg, finalCost };
 
             dailyLog.push(entry);
             saveToLocalStorage();
+            showToast(`✅ Local save: ${date} ${time}`);
 
-            showToast(`✅ Saved entry for ${date} at ${time}`);
+            // 🔥 Auto-save to Google Sheet if picked
+            const sheetUrl = document.getElementById('selectedSheet').value;
+            if (sheetUrl) {
+                try {
+                    await fetch('/api/save-cost', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ...entry, sheetUrl })
+                    });
+                    showToast(`✅ Synced to Google Sheet!`);
+                } catch(e) {
+                    console.log('Sheet save needs Vercel API');
+                }
+            }
         }
+
 
         function exportToExcel() {
             if (!dailyLog.length) {
@@ -685,6 +705,18 @@
         renderRows('machine1');
         renderRows('machine2');
         calculateBlend();
-    </script>
+            // 🔥 NEW: Google Sheet Picker
+        async function pickSheet() {
+            if (!window.gapiReady) return showToast('Google loading... try again');
+            
+            try {
+                await gapi.auth2.init({ client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com' }); // Replace
+                const picker = new google.picker.PickerBuilder()
+                    .addView(google.picker.ViewId.SPREADSHEETS)
+                    .setDeveloperKey('YOUR_API_KEY') // Replace from Google Console
+                    .setCallback(data => {
+                        if (data.action === google.picker.Action.PICKED) {
+                            document.getElementById('selectedSheet
+</script>
 </body>
 </html>
