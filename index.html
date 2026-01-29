@@ -1,58 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href="/manifest.json">
-    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Cost Price Calculator - Material Blending</title>
+    <title>Cost App</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CostApp">
+    <meta name="theme-color" content="#0f172a">
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2454/2454282.png">
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2454/2454282.png">
+    
+    <link rel="manifest" href="/manifest.json">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --border: #334155;
+            --bg: #0f172a;
+            --card: #1e293b;
             --primary: #38bdf8;
             --success: #10b981;
-            --excel-blue: #1d6f42;
+            --excel: #1d6f42;
             --text-main: #f1f5f9;
             --text-dim: #94a3b8;
+            --border: #334155;
         }
 
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+            background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
             padding: 20px;
+            padding-bottom: 100px; /* Space for bottom toolbar */
+            -webkit-tap-highlight-color: transparent;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        .container { width: 100%; max-width: 900px; }
+        .container { width: 100%; max-width: 800px; }
 
-        header { text-align: center; margin-bottom: 30px; }
-        header h1 { margin: 0; color: var(--primary); font-size: 1.8rem; }
-        header p { color: var(--text-dim); margin: 5px 0; }
+        header { text-align: center; margin-bottom: 25px; margin-top: 10px; }
+        header h1 { margin: 0; color: var(--primary); font-size: 1.6rem; }
+        header p { color: var(--text-dim); margin: 5px 0; font-size: 0.9rem; }
 
         .machine-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
         .card {
-            background: var(--card-bg);
+            background: var(--card);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
         }
 
-        .card h2 { font-size: 1.2rem; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .card h2 { 
+            font-size: 1.1rem; 
+            margin-top: 0; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px; 
+            margin-bottom: 15px;
+            display: flex; align-items: center; gap: 8px; 
+        }
 
         .row { display: grid; grid-template-columns: 2fr 1fr 1.2fr 40px; gap: 8px; margin-bottom: 12px; }
         
@@ -60,32 +78,34 @@
             background: #0f172a;
             border: 1px solid var(--border);
             color: white;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px !important; /* Prevents iOS Zoom */
             width: 100%;
             box-sizing: border-box;
+            -webkit-appearance: none;
         }
 
-        input:focus { outline: 1px solid var(--primary); }
+        input:focus { outline: 1px solid var(--primary); border-color: var(--primary); }
 
         .btn-add {
             width: 100%;
             background: rgba(56, 189, 248, 0.1);
             color: var(--primary);
             border: 1px dashed var(--primary);
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s;
+            font-size: 0.9rem;
+            margin-top: 5px;
         }
 
         .btn-del {
             background: transparent;
             border: none;
             color: #ef4444;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             cursor: pointer;
             padding: 0;
             display: flex;
@@ -93,111 +113,125 @@
             justify-content: center;
         }
 
-        .summary-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
-        .stat-item { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
-        .stat-label { font-size: 0.8rem; color: var(--text-dim); }
-        .stat-value { font-size: 1.2rem; font-weight: bold; margin-top: 4px; }
+        .stat-item { 
+            background: rgba(0,0,0,0.2); 
+            padding: 12px; 
+            border-radius: 10px; 
+            border-left: 4px solid var(--primary); 
+        }
+        .stat-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1.1rem; font-weight: bold; margin-top: 4px; }
+
+        .ratio-box {
+            background: rgba(56, 189, 248, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
 
         .final-result {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--success);
-            padding: 25px;
+            padding: 20px;
             text-align: center;
-            border-radius: 12px;
-            margin-top: 25px;
+            border-radius: 16px;
+            margin-top: 20px;
         }
 
-        .final-result h2 { color: var(--success); font-size: 3rem; margin: 10px 0; }
+        .final-result h2 { color: var(--success); font-size: 2.5rem; margin: 5px 0; }
 
+        /* APP-LIKE BOTTOM TOOLBAR */
         .toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 40px;
-            padding: 20px;
-            border-top: 1px solid var(--border);
+            gap: 10px;
+            background: rgba(30, 41, 59, 0.95);
+            padding: 10px 15px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            width: max-content;
         }
 
         .btn-tool {
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 10px 16px;
+            border-radius: 25px;
             border: none;
             cursor: pointer;
-            font-weight: 700;
+            font-weight: 600;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            transition: transform 0.1s;
+            gap: 6px;
+            white-space: nowrap;
         }
-
-        .btn-tool:active { transform: scale(0.95); }
 
         .btn-primary { background: var(--primary); color: #000; }
         .btn-success { background: var(--success); color: #fff; }
-        .btn-excel { background: var(--excel-blue); color: #fff; }
+        .btn-excel { background: var(--excel); color: #fff; }
         .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
+        
+        @media (max-width: 500px) {
+            .btn-tool span { display: none; } /* Hide text on small screens, keep icons */
+            .btn-tool { padding: 12px; border-radius: 50%; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>⚙️ Cost Price Calculator</h1>
-        <p>Material Blending for Machine 1 & Machine 2</p>
+        <h1>Cost App</h1>
+        <p>Material Blending Calculator</p>
     </header>
 
     <div class="machine-grid">
         <div class="card">
             <h2>🔧 Machine 1</h2>
             <div id="m1-container"></div>
-            <button class="btn-add" onclick="addItem('m1')">+ Add Material</button>
+            <button class="btn-add" onclick="addItem('m1')">+ Material</button>
         </div>
 
         <div class="card">
             <h2>🔧 Machine 2</h2>
             <div id="m2-container"></div>
-            <button class="btn-add" onclick="addItem('m2')">+ Add Material</button>
+            <button class="btn-add" onclick="addItem('m2')">+ Material</button>
         </div>
     </div>
 
-    <div class="summary-card">
-        <h2>📊 Summary & Blending Ratio</h2>
+    <div class="card">
         <div class="stat-grid">
             <div class="stat-item">
-                <div class="stat-label">Machine 1 Avg Cost</div>
+                <div class="stat-label">M1 Cost / kg</div>
                 <div class="stat-value" id="m1-avg">₹0.00</div>
             </div>
             <div class="stat-item" style="border-left-color: var(--success)">
-                <div class="stat-label">Machine 2 Avg Cost</div>
+                <div class="stat-label">M2 Cost / kg</div>
                 <div class="stat-value" id="m2-avg">₹0.00</div>
             </div>
         </div>
 
-        <div style="background: rgba(56, 189, 248, 0.05); padding: 15px; border-radius: 10px; border: 1px solid var(--border);">
-            <p style="margin-top: 0; font-weight: bold;">🎯 Blending Ratio Configuration</p>
-            <div style="display: flex; gap: 20px;">
+        <div class="ratio-box">
+            <p style="margin: 0 0 10px 0; font-size: 0.85rem; color: var(--primary); font-weight: bold;">🎯 Blending Ratio</p>
+            <div style="display: flex; gap: 15px;">
                 <div style="flex: 1">
-                    <label style="font-size: 0.8rem;">Machine 1 Parts</label>
+                    <label style="font-size: 0.75rem; color: var(--text-dim);">Parts M1</label>
                     <input type="number" step="0.1" id="r1" value="5" oninput="calculate()">
                 </div>
                 <div style="flex: 1">
-                    <label style="font-size: 0.8rem;">Machine 2 Parts</label>
+                    <label style="font-size: 0.75rem; color: var(--text-dim);">Parts M2</label>
                     <input type="number" step="0.1" id="r2" value="1" oninput="calculate()">
                 </div>
             </div>
@@ -205,20 +239,19 @@
     </div>
 
     <div class="final-result">
-        <span style="text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px;">Final Blended Cost per kg</span>
+        <span style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; color: var(--success);">Final Blended Cost</span>
         <h2 id="final-price">₹0.00</h2>
-    </div>
-
-    <div class="toolbar">
-        <button class="btn-tool btn-ghost" onclick="resetAll()">🔄 Reset All</button>
-        <button class="btn-tool btn-excel" onclick="exportToExcel()">📊 Export Excel</button>
-        <button class="btn-tool btn-success" onclick="saveToGoogleForm()">💾 SAVE TODAY</button>
-        <button class="btn-tool btn-primary" onclick="window.print()">📥 Download PDF</button>
     </div>
 </div>
 
+<div class="toolbar">
+    <button class="btn-tool btn-ghost" onclick="resetAll()">🔄</button>
+    <button class="btn-tool btn-excel" onclick="exportToExcel()">📊<span> Excel</span></button>
+    <button class="btn-tool btn-success" onclick="saveToGoogleForm()">💾<span> Save</span></button>
+</div>
+
 <script>
-    // STARTING WITH ZEROS (5:1 Ratio set in HTML)
+    // 1. DATA & STATE MANAGEMENT
     const defaultData = {
         m1: [{ name: '', qty: 0, price: 0 }],
         m2: [{ name: '', qty: 0, price: 0 }]
@@ -226,6 +259,7 @@
 
     let state = JSON.parse(localStorage.getItem('savedState')) || JSON.parse(JSON.stringify(defaultData));
 
+    // 2. RENDERING UI
     function render() {
         ['m1', 'm2'].forEach(key => {
             const container = document.getElementById(`${key}-container`);
@@ -234,9 +268,9 @@
                 const row = document.createElement('div');
                 row.className = 'row';
                 row.innerHTML = `
-                    <input type="text" placeholder="Material" value="${item.name}" oninput="updateItem('${key}', ${index}, 'name', this.value)">
-                    <input type="number" placeholder="kg" value="${item.qty === 0 ? '' : item.qty}" oninput="updateItem('${key}', ${index}, 'qty', this.value)">
-                    <input type="number" placeholder="Rate" value="${item.price === 0 ? '' : item.price}" oninput="updateItem('${key}', ${index}, 'price', this.value)">
+                    <input type="text" placeholder="Name" value="${item.name}" oninput="updateItem('${key}', ${index}, 'name', this.value)">
+                    <input type="number" placeholder="kg" value="${item.qty === 0 ? '' : item.qty}" inputmode="decimal" oninput="updateItem('${key}', ${index}, 'qty', this.value)">
+                    <input type="number" placeholder="₹" value="${item.price === 0 ? '' : item.price}" inputmode="decimal" oninput="updateItem('${key}', ${index}, 'price', this.value)">
                     <button class="btn-del" onclick="removeItem('${key}', ${index})">×</button>
                 `;
                 container.appendChild(row);
@@ -265,6 +299,7 @@
         render();
     }
 
+    // 3. CORE CALCULATION
     function calculate() {
         const getAvg = (list) => {
             let totalW = 0, totalC = 0;
@@ -285,84 +320,8 @@
         document.getElementById('final-price').innerText = `₹${final.toFixed(2)}`;
     }
 
-    function exportToExcel() {
-        const reportData = [];
-        
-        // Header
-        reportData.push(["Cost Calculation Report", new Date().toLocaleString()]);
-        reportData.push([]);
-
-        // Machine 1
-        reportData.push(["MACHINE 1 MATERIALS"]);
-        reportData.push(["Material", "Quantity (kg)", "Rate (₹)", "Subtotal"]);
-        state.m1.forEach(i => {
-            reportData.push([i.name, i.qty, i.price, (i.qty * i.price)]);
-        });
-        reportData.push(["M1 Avg Cost", "", "", document.getElementById('m1-avg').innerText]);
-        reportData.push([]);
-
-        // Machine 2
-        reportData.push(["MACHINE 2 MATERIALS"]);
-        reportData.push(["Material", "Quantity (kg)", "Rate (₹)", "Subtotal"]);
-        state.m2.forEach(i => {
-            reportData.push([i.name, i.qty, i.price, (i.qty * i.price)]);
-        });
-        reportData.push(["M2 Avg Cost", "", "", document.getElementById('m2-avg').innerText]);
-        reportData.push([]);
-
-        // Final Result
-        reportData.push(["BLENDING SUMMARY"]);
-        reportData.push(["M1 Ratio Parts", document.getElementById('r1').value]);
-        reportData.push(["M2 Ratio Parts", document.getElementById('r2').value]);
-        reportData.push(["FINAL BLENDED COST", document.getElementById('final-price').innerText]);
-
-        const ws = XLSX.utils.aoa_to_sheet(reportData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Calculation");
-        XLSX.writeFile(wb, "Cost_Calculation_Report.xlsx");
-    }
-
+    // 4. GOOGLE FORM EXPORT
     function saveToGoogleForm() {
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSevZiMDB-TZ12VprOh0QP-nRsbIhqdiKdIeS6x94-2QqBZKMw/formResponse";
         const entry_m1 = "entry.1043991863"; 
-        const entry_m2 = "entry.1763710978"; 
-        const entry_final = "entry.482957280"; 
-
-        const m1v = document.getElementById('m1-avg').innerText;
-        const m2v = document.getElementById('m2-avg').innerText;
-        const fv = document.getElementById('final-price').innerText;
-
-        const formData = new FormData();
-        formData.append(entry_m1, m1v);
-        formData.append(entry_m2, m2v);
-        formData.append(entry_final, fv);
-
-        fetch(FORM_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        }).then(() => {
-            alert("✅ SUCCESSFULLY LOGGED!");
-        }).catch(() => {
-            alert("❌ Connection Error.");
-        });
-    }
-
-    function resetAll() {
-        if(confirm('Clear all data?')) {
-            localStorage.removeItem('savedState');
-            state = JSON.parse(JSON.stringify(defaultData));
-            document.getElementById('r1').value = 5;
-            document.getElementById('r2').value = 1;
-            render();
-        }
-    }
-
-    render();
-    if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
-</script>
-
-</body>
-</html>
+        const entry_m2 = "entry.17637
